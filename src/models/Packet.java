@@ -1,6 +1,8 @@
 package models;
 
-public class Packet {
+import java.io.Serializable;
+
+public class Packet implements Serializable {
     private String guid;
     private String type;
 
