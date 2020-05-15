@@ -28,6 +28,7 @@ public class ServerController {
             ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             Packet packet = (Packet) objectInputStream.readObject();
             System.out.println("Server: Client Type "+packet.getType());
+            System.out.println("Server: Topic Name "+packet.getTopicName());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

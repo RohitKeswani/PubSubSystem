@@ -1,7 +1,7 @@
 package models;
 
 //client class
-public class Client {
+public class Advertiser {
     private Packet packet;
 
     public Packet getPacket() {

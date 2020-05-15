@@ -8,11 +8,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 //write the logic for handling client
-public class ClientController {
+public class AdvertiserController {
     private int port;
     private String address;
 
-    public ClientController(String address, int port)
+    public AdvertiserController(String address, int port)
     {
         this.port = port;
         this.address = address;
