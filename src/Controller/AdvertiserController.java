@@ -25,7 +25,7 @@ public class AdvertiserController {
         boolean sentConnection=false;
         try{
             Socket socket = new Socket(address, port);
-            System.out.println("Client: Connected");
+            System.out.println("Advertiser: Connected");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(packet);
         } catch (UnknownHostException e) {
@@ -33,8 +33,6 @@ public class AdvertiserController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
         //return sentConnection;
     }
 
