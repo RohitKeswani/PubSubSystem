@@ -3,16 +3,14 @@ package Controller;
 import models.Packet;
 import models.TypeOfPacket;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
-//write the logic for handling server
 public class ServerController implements Runnable{
     private int port;
     private List<String> topicList = new ArrayList<>();
@@ -27,8 +25,6 @@ public class ServerController implements Runnable{
 
     public void waitForClientConnection()
     {
-        //write code to receive a connection from client.
-        //receive packet instead of string;
         try {
             ServerSocket serverSocket = new ServerSocket(port);
             while(true) {
@@ -52,7 +48,6 @@ public class ServerController implements Runnable{
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        //return true;
     }
 
     private void handlePublisher(Packet packet) {
@@ -81,7 +76,10 @@ public class ServerController implements Runnable{
         packet.setType(TypeOfPacket.Server);
         packet.setTopicList(topicList);
         try{
-            Socket socket = new Socket("localhost", 4000);
+            Properties properties = new Common().lookUpProperty();
+            String address = properties.getProperty("publisherAddress");
+            int publisherPort = Integer.parseInt(properties.getProperty("publisherPort"));
+            Socket socket = new Socket(address, publisherPort);
             System.out.println("Server-thread: Connected to Publisher to send topic list");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(packet);
