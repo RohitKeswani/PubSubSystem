@@ -1,6 +1,7 @@
 package Controller;
 
 import models.Packet;
+import models.TypeOfPacket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -38,11 +39,11 @@ public class ServerController implements Runnable{
                 ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
                 Packet packet = (Packet) objectInputStream.readObject();
                 System.out.println("Server: Client Type " + packet.getType());
-                if(packet.getType().equals("Advertiser")){
+                if(packet.getType() == TypeOfPacket.Advertiser){
                     handleAdvertiser(packet);
                 }
                 else
-                    if (packet.getType().equals("Publisher")){
+                    if (packet.getType() == TypeOfPacket.Publisher){
                         handlePublisher(packet);
                     }
             }
@@ -68,19 +69,20 @@ public class ServerController implements Runnable{
     }
 
     private void publishContentToSubcribers() {
+        /**
+         * TODO: send message ot all subscribers in list for value of topicName in hashmap of <topicName, subscriberList>
+         * TODO: if any subscriber offline, store the packet in hashmap of subscriber <subscriberId, packet<List>>
+         * TODO: try re-transmitting message with exponential timeoff method.
+         */
     }
 
     private void sendTopicListToPublisher() {
-        System.out.println("Sending");
-        for(String s : topicList){
-            System.out.println(s);
-        }
         Packet packet = new Packet();
-        packet.setType("Server");
+        packet.setType(TypeOfPacket.Server);
         packet.setTopicList(topicList);
         try{
             Socket socket = new Socket("localhost", 4000);
-            System.out.println("Server: Connected to Publisher to send topic list");
+            System.out.println("Server-thread: Connected to Publisher to send topic list");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(packet);
         } catch (UnknownHostException e) {
@@ -91,25 +93,19 @@ public class ServerController implements Runnable{
     }
 
     private void handleAdvertiser(Packet packet) {
-        registerTopic(packet.getTopicName());
+        registerTopic(packet.getTopicName().toLowerCase());
         System.out.println("Server: Topic Name " + packet.getTopicName() +" successfully registered");
     }
 
     private void registerTopic(String topicName) {
-        System.out.println("Registering topic");
+        System.out.println("Server: Registering topic");
         if(!topicList.contains(topicName)){
             topicList.add(topicName);
-        }
-        for(String topic:topicList){
-            System.out.println(topic);
         }
     }
 
     @Override
     public void run() {
-        for(String s: topicList){
-            System.out.println(s);
-        }
         sendTopicListToPublisher();
     }
 }

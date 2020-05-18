@@ -1,6 +1,7 @@
 package Controller;
 
 import models.Packet;
+import models.TypeOfPacket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -62,7 +63,7 @@ public class PublisherController {
         String topicName = sc.nextLine();
         System.out.println("Enter the text for topic you would like to publish");
         String content = sc.nextLine();
-        packet.setType("Publisher");
+        packet.setType(TypeOfPacket.Publisher);
         packet.setTopicName(topicName);
         packet.setContent(content);
         return packet;

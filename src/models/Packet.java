@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Packet implements Serializable {
     private String guid;
-    private String type;
+    private TypeOfPacket type;
     private String topicName;
     private List<String> topicList;
     private String content;
@@ -42,11 +42,11 @@ public class Packet implements Serializable {
         this.guid = guid;
     }
 
-    public String getType() {
+    public TypeOfPacket getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TypeOfPacket type) {
         this.type = type;
     }
 }
