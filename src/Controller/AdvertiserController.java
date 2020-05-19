@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class AdvertiserController {
+public class AdvertiserController implements Controller {
     private int port;
     private String address;
 

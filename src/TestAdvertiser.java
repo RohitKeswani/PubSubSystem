@@ -3,13 +3,13 @@ import Controller.Common;
 import models.Packet;
 import models.TypeOfPacket;
 
-import java.util.Properties;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class TestAdvertiser {
     public static void main(String[] args) {
-        AdvertiserController advertiserController = getAdvertiserObjectToConnect();
+        AdvertiserController advertiserController = (AdvertiserController)
+                new Common().getConnectionObject(TypeOfPacket.Advertiser.toString());
         acceptInputToSendTopic(advertiserController);
     }
 
@@ -32,12 +32,5 @@ public class TestAdvertiser {
             System.out.println("2. Exit");
             input = Integer.parseInt(sc.nextLine());
         }
-    }
-
-    private static AdvertiserController getAdvertiserObjectToConnect() {
-        Properties properties = new Common().lookUpProperty();
-        String address = properties.getProperty("serverAddress");
-        int serverPort = Integer.parseInt(properties.getProperty("serverPort"));
-        return new AdvertiserController(address, serverPort);
     }
 }

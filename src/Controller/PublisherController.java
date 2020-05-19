@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
 
-public class PublisherController {
+public class PublisherController implements Controller{
     private int serverPort;
     private String address;
 
