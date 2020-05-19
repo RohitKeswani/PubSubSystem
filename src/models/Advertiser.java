@@ -2,13 +2,13 @@ package models;
 
 //client class
 public class Advertiser {
-    private Packet packet;
+    private publusPacket packet;
 
-    public Packet getPacket() {
+    public publusPacket getPacket() {
         return packet;
     }
 
-    public void setPacket(Packet packet) {
+    public void setPacket(publusPacket packet) {
         this.packet = packet;
     }
 }

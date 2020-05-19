@@ -1,6 +1,8 @@
 package Controller;
 
-public class SubscriberController implements Controller{
+import Controller;
+
+public class SubscriberController implements Controller {
     private int port;
     private String address;
 

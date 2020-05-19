@@ -1,6 +1,6 @@
 import Controller.Common;
 import Controller.PublisherController;
-import models.Packet;
+import models.publusPacket;
 import models.TypeOfPacket;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class TestPublisher {
     }
 
     private static void createContentAndSend(PublisherController publisherController) {
-        Packet packet = new Packet();
+        publusPacket packet = new publusPacket();
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the topic name from list");
         String topicName = sc.nextLine();
@@ -38,7 +38,7 @@ public class TestPublisher {
     }
 
     private static List<String> pingServerToGetTopics(PublisherController publisherController) {
-        Packet packet = new Packet();
+        publusPacket packet = new publusPacket();
         packet.setGuid(UUID.randomUUID().toString());
         packet.setType(TypeOfPacket.Publisher);
         return publisherController.connectToServer(packet);

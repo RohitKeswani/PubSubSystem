@@ -3,7 +3,7 @@ package models;
 import java.io.Serializable;
 import java.util.List;
 
-public class Packet implements Serializable {
+public class publusPacket implements Serializable {
     private String guid;
     private TypeOfPacket type;
     private String topicName;

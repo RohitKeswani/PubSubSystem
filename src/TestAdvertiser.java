@@ -1,6 +1,6 @@
 import Controller.AdvertiserController;
 import Controller.Common;
-import models.Packet;
+import models.publusPacket;
 import models.TypeOfPacket;
 
 import java.util.Scanner;
@@ -20,7 +20,7 @@ public class TestAdvertiser {
         Scanner sc = new Scanner(System.in);
         int input = Integer.parseInt(sc.nextLine());
         while(input != 2){
-            Packet packet = new Packet();
+            publusPacket packet = new publusPacket();
             packet.setGuid(UUID.randomUUID().toString());
             packet.setType(TypeOfPacket.Advertiser);
             System.out.println("Enter the name of the topic");

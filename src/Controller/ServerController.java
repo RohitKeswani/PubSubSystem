@@ -1,6 +1,6 @@
 package Controller;
 
-import models.Packet;
+import models.publusPacket;
 import models.TypeOfPacket;
 
 import java.io.*;
@@ -33,7 +33,7 @@ public class ServerController implements Runnable{
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Server: Client Connected on " + clientSocket.getPort());
                 ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-                Packet packet = (Packet) objectInputStream.readObject();
+                publusPacket packet = (publusPacket) objectInputStream.readObject();
                 System.out.println("Server: Client Type " + packet.getType());
                 if(packet.getType() == TypeOfPacket.Advertiser){
                     handleAdvertiser(packet);
@@ -50,7 +50,7 @@ public class ServerController implements Runnable{
         }
     }
 
-    private void handlePublisher(Packet packet) {
+    private void handlePublisher(publusPacket packet) {
         if(packet.getTopicName()==null){
             ServerController serverController = new ServerController();
             serverController.topicList = this.topicList;
@@ -72,7 +72,7 @@ public class ServerController implements Runnable{
     }
 
     private void sendTopicListToPublisher() {
-        Packet packet = new Packet();
+        publusPacket packet = new publusPacket();
         packet.setType(TypeOfPacket.Server);
         packet.setTopicList(topicList);
         try{
@@ -90,7 +90,7 @@ public class ServerController implements Runnable{
         }
     }
 
-    private void handleAdvertiser(Packet packet) {
+    private void handleAdvertiser(publusPacket packet) {
         registerTopic(packet.getTopicName().toLowerCase());
         System.out.println("Server: Topic Name " + packet.getTopicName() +" successfully registered");
     }

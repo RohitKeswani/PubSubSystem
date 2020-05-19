@@ -1,6 +1,7 @@
 package Controller;
 
-import models.Packet;
+import Controller;
+import models.publusPacket;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -9,7 +10,7 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Properties;
 
-public class PublisherController implements Controller{
+public class PublisherController implements Controller {
     private int serverPort;
     private String address;
 
@@ -30,7 +31,7 @@ public class PublisherController implements Controller{
             Socket clientSocket = serverSocket.accept();
             System.out.println("Publisher: Server Connected on " + clientSocket.getPort());
             ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            Packet packet = (Packet) objectInputStream.readObject();
+            publusPacket packet = (publusPacket) objectInputStream.readObject();
             System.out.println("Publisher: Client Type " + packet.getType());
             return packet.getTopicList();
         } catch (IOException e) {
@@ -41,7 +42,7 @@ public class PublisherController implements Controller{
         return null;
     }
 
-    public List<String> connectToServer(Packet packet)
+    public List<String> connectToServer(publusPacket packet)
     {
         try{
             Socket socket = new Socket(address, serverPort);

@@ -1,5 +1,6 @@
 package Controller;
 
+import Controller;
 import models.TypeOfPacket;
 
 import java.io.File;
@@ -8,7 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-public class Common implements Controller{
+public class Common implements Controller {
     public Properties lookUpProperty(){
         try{
             File propertiesFile = new File("src/application.properties");

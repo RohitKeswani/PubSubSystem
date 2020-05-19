@@ -1,6 +1,7 @@
 package Controller;
 
-import models.Packet;
+import Controller;
+import models.publusPacket;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -17,7 +18,7 @@ public class AdvertiserController implements Controller {
         this.address = address;
     }
 
-    public void connectToServer(Packet packet)
+    public void connectToServer(publusPacket packet)
     {
         try{
             Socket socket = new Socket(address, port);
