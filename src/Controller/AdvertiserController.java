@@ -1,12 +1,10 @@
 package Controller;
 
-import Controller;
-import models.publusPacket;
+import models.Packets.AdvertiserPacket;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class AdvertiserController implements Controller {
     private int port;
@@ -18,17 +16,15 @@ public class AdvertiserController implements Controller {
         this.address = address;
     }
 
-    public void connectToServer(publusPacket packet)
+    public void connectToServer(AdvertiserPacket advertiserPacket)
     {
         try{
             Socket socket = new Socket(address, port);
             System.out.println("Advertiser: Connected");
-            System.out.println("Advertiser: Sending topic "+packet.getTopicName()+" now.");
+            System.out.println("Advertiser: Sending topic "+advertiserPacket.getTopicName()+" now.");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(packet);
+            objectOutputStream.writeObject(advertiserPacket);
             System.out.println("Advertiser: Topic sent to server.");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

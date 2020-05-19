@@ -2,9 +2,10 @@ package models.Packets;
 
 import models.TypeOfPacket;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ServerPacket implements Packet {
+public class ServerPacket implements Packet, Serializable {
     private String guid;
     private TypeOfPacket type;
     private String topicName;

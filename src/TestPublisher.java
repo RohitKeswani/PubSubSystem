@@ -1,11 +1,10 @@
 import Controller.Common;
 import Controller.PublisherController;
-import models.publusPacket;
+import models.Packets.PublisherPacket;
 import models.TypeOfPacket;
 
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class TestPublisher {
     public static void main(String[] args) {
@@ -17,16 +16,16 @@ public class TestPublisher {
     }
 
     private static void createContentAndSend(PublisherController publisherController) {
-        publusPacket packet = new publusPacket();
+        PublisherPacket publisherPacket = (PublisherPacket)
+                new Common().createPacketForCommunication(TypeOfPacket.Publisher.toString());
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the topic name from list");
         String topicName = sc.nextLine();
         System.out.println("Enter the text for topic you would like to publish");
         String content = sc.nextLine();
-        packet.setType(TypeOfPacket.Publisher);
-        packet.setTopicName(topicName);
-        packet.setContent(content);
-        publisherController.connectToServer(packet);
+        publisherPacket.setTopicName(topicName);
+        publisherPacket.setContent(content);
+        publisherController.connectToServer(publisherPacket);
     }
 
     private static void printAvailableTopics(List<String> topicList) {
@@ -38,9 +37,8 @@ public class TestPublisher {
     }
 
     private static List<String> pingServerToGetTopics(PublisherController publisherController) {
-        publusPacket packet = new publusPacket();
-        packet.setGuid(UUID.randomUUID().toString());
-        packet.setType(TypeOfPacket.Publisher);
-        return publisherController.connectToServer(packet);
+        PublisherPacket publisherPacket = (PublisherPacket)
+                new Common().createPacketForCommunication(TypeOfPacket.Publisher.toString());
+        return publisherController.connectToServer(publisherPacket);
     }
 }

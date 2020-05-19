@@ -1,13 +1,13 @@
 package Controller;
 
-import Controller;
+import models.Packets.*;
 import models.TypeOfPacket;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 
 public class Common implements Controller {
     public Properties lookUpProperty(){
@@ -17,8 +17,6 @@ public class Common implements Controller {
             Properties properties = new Properties();
             properties.load(reader);
             return properties;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -30,26 +28,55 @@ public class Common implements Controller {
         String address = properties.getProperty("serverAddress");
         int serverPort = Integer.parseInt(properties.getProperty("serverPort"));
         if(clientType.equals(TypeOfPacket.Subscriber.toString())){
-            return sendSubscriberObject(address, serverPort);
+            return new SubscriberController(address, serverPort);
         }
         else
         if(clientType.equals(TypeOfPacket.Advertiser.toString())){
-            return sendAdvertiserObject(address, serverPort);
+            return new AdvertiserController(address, serverPort);
         }
         else
-            return sendPublisherObject(address, serverPort);
+            return new PublisherController(address, serverPort);
 
     }
 
-    private AdvertiserController sendAdvertiserObject(String address, int serverPort) {
-        return new AdvertiserController(address, serverPort);
+    public Packet createPacketForCommunication(String clientType) {
+        if(clientType.equals(TypeOfPacket.Advertiser.toString()))
+            return generateAdvertiserPacket();
+        else
+            if(clientType.equals(TypeOfPacket.Publisher.toString()))
+                return generatePublisherPacket();
+            else
+                if(clientType.equals(TypeOfPacket.Subscriber.toString()))
+                    return generateSubscriberPacket();
+                else
+                    return generateServerPacket();
     }
 
-    private SubscriberController sendSubscriberObject(String address, int serverPort) {
-        return new SubscriberController(address, serverPort);
+    private ServerPacket generateServerPacket() {
+        ServerPacket serverPacket = new ServerPacket();
+        serverPacket.setGuid(UUID.randomUUID().toString());
+        serverPacket.setType(TypeOfPacket.Server);
+        return serverPacket;
     }
 
-    private PublisherController sendPublisherObject(String address, int serverPort) {
-        return new PublisherController(address, serverPort);
+    private SubscriberPacket generateSubscriberPacket() {
+        SubscriberPacket subscriberPacket = new SubscriberPacket();
+        subscriberPacket.setGuid(UUID.randomUUID().toString());
+        subscriberPacket.setType(TypeOfPacket.Subscriber);
+        return subscriberPacket;
+    }
+
+    private PublisherPacket generatePublisherPacket() {
+        PublisherPacket publisherPacket = new PublisherPacket();
+        publisherPacket.setGuid(UUID.randomUUID().toString());
+        publisherPacket.setType(TypeOfPacket.Publisher);
+        return publisherPacket;
+    }
+
+    private AdvertiserPacket generateAdvertiserPacket() {
+        AdvertiserPacket advertiserPacket = new AdvertiserPacket();
+        advertiserPacket.setGuid(UUID.randomUUID().toString());
+        advertiserPacket.setType(TypeOfPacket.Advertiser);
+        return advertiserPacket;
     }
 }

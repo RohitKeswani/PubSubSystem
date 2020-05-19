@@ -1,10 +1,9 @@
 import Controller.AdvertiserController;
 import Controller.Common;
-import models.publusPacket;
+import models.Packets.AdvertiserPacket;
 import models.TypeOfPacket;
 
 import java.util.Scanner;
-import java.util.UUID;
 
 public class TestAdvertiser {
     public static void main(String[] args) {
@@ -20,13 +19,12 @@ public class TestAdvertiser {
         Scanner sc = new Scanner(System.in);
         int input = Integer.parseInt(sc.nextLine());
         while(input != 2){
-            publusPacket packet = new publusPacket();
-            packet.setGuid(UUID.randomUUID().toString());
-            packet.setType(TypeOfPacket.Advertiser);
+            AdvertiserPacket advertiserPacket = (AdvertiserPacket)
+                    new Common().createPacketForCommunication(TypeOfPacket.Advertiser.toString());
             System.out.println("Enter the name of the topic");
             String topicName = sc.nextLine();
-            packet.setTopicName(topicName);
-            advertiserController.connectToServer(packet);
+            advertiserPacket.setTopicName(topicName);
+            advertiserController.connectToServer(advertiserPacket);
             System.out.println("What would like you to do? Select the option");
             System.out.println("1. Enter topic name to register with server");
             System.out.println("2. Exit");

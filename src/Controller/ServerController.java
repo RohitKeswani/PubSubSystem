@@ -1,12 +1,14 @@
 package Controller;
 
-import models.publusPacket;
+import models.Packets.AdvertiserPacket;
+import models.Packets.Packet;
+import models.Packets.PublisherPacket;
+import models.Packets.ServerPacket;
 import models.TypeOfPacket;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -33,32 +35,30 @@ public class ServerController implements Runnable{
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("Server: Client Connected on " + clientSocket.getPort());
                 ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-                publusPacket packet = (publusPacket) objectInputStream.readObject();
+                Packet packet = (Packet) objectInputStream.readObject();
                 System.out.println("Server: Client Type " + packet.getType());
                 if(packet.getType() == TypeOfPacket.Advertiser){
-                    handleAdvertiser(packet);
+                    handleAdvertiser((AdvertiserPacket) packet);
                 }
                 else
                     if (packet.getType() == TypeOfPacket.Publisher){
-                        handlePublisher(packet);
+                        handlePublisher((PublisherPacket) packet);
                     }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private void handlePublisher(publusPacket packet) {
-        if(packet.getTopicName()==null){
+    private void handlePublisher(PublisherPacket publisherPacket) {
+        if(publisherPacket.getTopicName()==null){
             ServerController serverController = new ServerController();
             serverController.topicList = this.topicList;
             Thread thread = new Thread(serverController);
             thread.start();
         }
         else {
-            System.out.println(packet.getContent());
+            System.out.println(publisherPacket.getContent());
             publishContentToSubcribers();
         }
     }
@@ -72,9 +72,9 @@ public class ServerController implements Runnable{
     }
 
     private void sendTopicListToPublisher() {
-        publusPacket packet = new publusPacket();
-        packet.setType(TypeOfPacket.Server);
-        packet.setTopicList(topicList);
+        ServerPacket serverPacket = (ServerPacket)
+                new Common().createPacketForCommunication(TypeOfPacket.Server.toString());
+        serverPacket.setTopicList(topicList);
         try{
             Properties properties = new Common().lookUpProperty();
             String address = properties.getProperty("publisherAddress");
@@ -82,17 +82,15 @@ public class ServerController implements Runnable{
             Socket socket = new Socket(address, publisherPort);
             System.out.println("Server-thread: Connected to Publisher to send topic list");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(packet);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            objectOutputStream.writeObject(serverPacket);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void handleAdvertiser(publusPacket packet) {
-        registerTopic(packet.getTopicName().toLowerCase());
-        System.out.println("Server: Topic Name " + packet.getTopicName() +" successfully registered");
+    private void handleAdvertiser(AdvertiserPacket advertiserPacket) {
+        registerTopic(advertiserPacket.getTopicName().toLowerCase());
+        System.out.println("Server: Topic Name " + advertiserPacket.getTopicName() +" successfully registered");
     }
 
     private void registerTopic(String topicName) {
