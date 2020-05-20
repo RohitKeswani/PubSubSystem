@@ -1,9 +1,6 @@
 package Controller;
 
-import models.Packets.AdvertiserPacket;
-import models.Packets.Packet;
-import models.Packets.PublisherPacket;
-import models.Packets.ServerPacket;
+import models.Packets.*;
 import models.TypeOfPacket;
 
 import java.io.*;
@@ -44,18 +41,56 @@ public class ServerController implements Runnable{
                     if (packet.getType() == TypeOfPacket.Publisher){
                         handlePublisher((PublisherPacket) packet);
                     }
+                    else{
+                        handleSubscriber((SubscriberPacket) packet);
+                    }
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+    private void handleSubscriber(SubscriberPacket subscriberPacket) {
+        if(subscriberPacket.getTopicName()==null){
+            sendTopicListToClient(TypeOfPacket.Subscriber.toString());
+        }
+    }
+
+    private void sendTopicListToClient(String clientType) {
+        String propertiesLookupAddressValue = null;
+        String propertiesLookupPortValue = null;
+        if(clientType.equals(TypeOfPacket.Subscriber.toString())){
+            propertiesLookupAddressValue = "subscriberAddress";
+            propertiesLookupPortValue = "subscriberPort";
+        }
+        else{
+            propertiesLookupAddressValue ="publisherAddress";
+            propertiesLookupPortValue = "publisherPort";
+        }
+        ServerPacket serverPacket = (ServerPacket)
+                new Common().createPacketForCommunication(TypeOfPacket.Server.toString());
+        serverPacket.setTopicList(topicList);
+        try{
+            Properties properties = new Common().lookUpProperty();
+            String address = properties.getProperty(propertiesLookupAddressValue);
+            int port = Integer.parseInt(properties.getProperty(propertiesLookupPortValue));
+            Socket socket = new Socket(address, port);
+            System.out.println("Server: Connected to "+clientType+" to send topic list");
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            objectOutputStream.writeObject(serverPacket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void handlePublisher(PublisherPacket publisherPacket) {
         if(publisherPacket.getTopicName()==null){
-            ServerController serverController = new ServerController();
-            serverController.topicList = this.topicList;
-            Thread thread = new Thread(serverController);
-            thread.start();
+//            ServerController serverController = new ServerController();
+//            serverController.topicList = this.topicList;
+//            Thread thread = new Thread(serverController);
+//            thread.start();
+            sendTopicListToClient(TypeOfPacket.Publisher.toString());
         }
         else {
             System.out.println(publisherPacket.getContent());
@@ -69,23 +104,6 @@ public class ServerController implements Runnable{
          * TODO: if any subscriber offline, store the packet in hashmap of subscriber <subscriberId, packet<List>>
          * TODO: try re-transmitting message with exponential timeoff method.
          */
-    }
-
-    private void sendTopicListToPublisher() {
-        ServerPacket serverPacket = (ServerPacket)
-                new Common().createPacketForCommunication(TypeOfPacket.Server.toString());
-        serverPacket.setTopicList(topicList);
-        try{
-            Properties properties = new Common().lookUpProperty();
-            String address = properties.getProperty("publisherAddress");
-            int publisherPort = Integer.parseInt(properties.getProperty("publisherPort"));
-            Socket socket = new Socket(address, publisherPort);
-            System.out.println("Server-thread: Connected to Publisher to send topic list");
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectOutputStream.writeObject(serverPacket);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void handleAdvertiser(AdvertiserPacket advertiserPacket) {
@@ -102,6 +120,6 @@ public class ServerController implements Runnable{
 
     @Override
     public void run() {
-        sendTopicListToPublisher();
+        sendTopicListToClient(TypeOfPacket.Publisher.toString());
     }
 }
