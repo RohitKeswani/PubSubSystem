@@ -54,6 +54,9 @@ public class ServerController implements Runnable{
         if(subscriberPacket.getTopicName()==null){
             sendTopicListToClient(TypeOfPacket.Subscriber.toString());
         }
+        else {
+            System.out.println("Server: "+subscriberPacket.getTopicName());
+        }
     }
 
     private void sendTopicListToClient(String clientType) {
@@ -74,13 +77,11 @@ public class ServerController implements Runnable{
             Properties properties = new Common().lookUpProperty();
             String address = properties.getProperty(propertiesLookupAddressValue);
             int port = Integer.parseInt(properties.getProperty(propertiesLookupPortValue));
-            System.out.println("Server: ------->"+address+" "+port);
             Socket socket = new Socket(address, port);
             System.out.println("Server: Connected to "+clientType+" to send topic list");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(serverPacket);
         } catch (IOException e) {
-            System.out.println("Server: "+clientType);
             e.printStackTrace();
         }
 

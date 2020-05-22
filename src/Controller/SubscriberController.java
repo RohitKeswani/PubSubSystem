@@ -55,12 +55,12 @@ public class SubscriberController implements Controller, Runnable {
     {
         try{
             if(subscriberPacket.getTopicName()==null){
+                System.out.println("Subscriber: Receiving topics from Server now…");
                 Thread thread = new Thread(new SubscriberController());
                 thread.start();
             }
             Socket socket = new Socket(address, port);
             System.out.println("Subscriber: Connected");
-            System.out.println("Subscriber: Receiving topics from Server now…");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(subscriberPacket);
 
