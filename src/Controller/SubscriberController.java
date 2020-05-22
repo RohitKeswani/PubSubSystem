@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.util.List;
 import java.util.Properties;
 
-public class SubscriberController implements Controller {
+public class SubscriberController implements Controller, Runnable {
     private int port;
     private String address;
 
@@ -21,7 +21,19 @@ public class SubscriberController implements Controller {
         this.address = address;
     }
 
-    public List<String> waitForServerConnection()
+    public SubscriberController() {
+
+    }
+
+    private static void printAvailableTopics(List<String> topicList) {
+        System.out.println("Subscriber: Available topics are:");
+        for(String topic : topicList){
+            System.out.print(topic+"\t");
+        }
+        System.out.println();
+    }
+
+    public void waitForServerConnection()
     {
         try {
             Properties properties = new Common().lookUpProperty();
@@ -34,26 +46,31 @@ public class SubscriberController implements Controller {
             ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
             ServerPacket serverPacket = (ServerPacket) objectInputStream.readObject();
             System.out.println("Subscriber: Client Type " + serverPacket.getType());
-            return serverPacket.getTopicList();
+            printAvailableTopics(serverPacket.getTopicList());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return null;
     }
-    public List<String> connectToServer(SubscriberPacket subscriberPacket)
+    public void connectToServer(SubscriberPacket subscriberPacket)
     {
         try{
+            if(subscriberPacket.getTopicName()==null){
+                Thread thread = new Thread(new SubscriberController());
+                thread.start();
+            }
             Socket socket = new Socket(address, port);
             System.out.println("Subscriber: Connected");
             System.out.println("Subscriber: Receiving topics from Server now…");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(subscriberPacket);
-            if(subscriberPacket.getTopicName()==null){
-                return waitForServerConnection();
-            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+    }
+
+    @Override
+    public void run() {
+        waitForServerConnection();
     }
 }

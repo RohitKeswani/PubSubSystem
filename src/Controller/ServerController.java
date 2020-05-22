@@ -74,11 +74,13 @@ public class ServerController implements Runnable{
             Properties properties = new Common().lookUpProperty();
             String address = properties.getProperty(propertiesLookupAddressValue);
             int port = Integer.parseInt(properties.getProperty(propertiesLookupPortValue));
+            System.out.println("Server: ------->"+address+" "+port);
             Socket socket = new Socket(address, port);
             System.out.println("Server: Connected to "+clientType+" to send topic list");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(serverPacket);
         } catch (IOException e) {
+            System.out.println("Server: "+clientType);
             e.printStackTrace();
         }
 
@@ -86,11 +88,10 @@ public class ServerController implements Runnable{
 
     private void handlePublisher(PublisherPacket publisherPacket) {
         if(publisherPacket.getTopicName()==null){
-//            ServerController serverController = new ServerController();
-//            serverController.topicList = this.topicList;
-//            Thread thread = new Thread(serverController);
-//            thread.start();
-            sendTopicListToClient(TypeOfPacket.Publisher.toString());
+            ServerController serverController = new ServerController();
+            serverController.topicList = this.topicList;
+            Thread thread = new Thread(serverController);
+            thread.start();
         }
         else {
             System.out.println(publisherPacket.getContent());
