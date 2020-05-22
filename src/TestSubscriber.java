@@ -3,7 +3,6 @@ import Controller.*;
 import models.Packets.SubscriberPacket;
 import models.TypeOfPacket;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class TestSubscriber {
@@ -13,7 +12,6 @@ public class TestSubscriber {
         SubscriberPacket subscriberPacket = (SubscriberPacket)
                 new Common().createPacketForCommunication(TypeOfPacket.Subscriber.toString());
         subscriberController.connectToServer(subscriberPacket);
-        //printAvailableTopics();
         acceptInputToSend(subscriberController);
     }
 
@@ -21,7 +19,7 @@ public class TestSubscriber {
         SubscriberPacket subscriberPacket = (SubscriberPacket)
                 new Common().createPacketForCommunication(TypeOfPacket.Subscriber.toString());
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the topic name from list");
+        System.out.println("Subscriber: Enter the topic name from list");
         String topicName = sc.nextLine();
         subscriberPacket.setTopicName(topicName);
         subscriberController.connectToServer(subscriberPacket);

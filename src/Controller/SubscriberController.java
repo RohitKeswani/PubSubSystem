@@ -25,14 +25,6 @@ public class SubscriberController implements Controller, Runnable {
 
     }
 
-    private static void printAvailableTopics(List<String> topicList) {
-        System.out.println("Subscriber: Available topics are:");
-        for(String topic : topicList){
-            System.out.print(topic+"\t");
-        }
-        System.out.println();
-    }
-
     public void waitForServerConnection()
     {
         try {
@@ -51,20 +43,29 @@ public class SubscriberController implements Controller, Runnable {
             e.printStackTrace();
         }
     }
+
+    private static void printAvailableTopics(List<String> topicList) {
+        System.out.println("Subscriber: Available topics are:");
+        for(String topic : topicList){
+            System.out.print(topic+"\t");
+        }
+        System.out.println();
+    }
+
     public void connectToServer(SubscriberPacket subscriberPacket)
     {
+        Thread thread = new Thread(new SubscriberController());
         try{
             if(subscriberPacket.getTopicName()==null){
                 System.out.println("Subscriber: Receiving topics from Server now…");
-                Thread thread = new Thread(new SubscriberController());
                 thread.start();
             }
             Socket socket = new Socket(address, port);
             System.out.println("Subscriber: Connected");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(subscriberPacket);
-
-        } catch (IOException e) {
+            thread.join();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
