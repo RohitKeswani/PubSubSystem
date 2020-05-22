@@ -6,13 +6,14 @@ import models.TypeOfPacket;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class ServerController implements Runnable{
     private int port;
     private List<String> topicList = new ArrayList<>();
+    private HashMap<String, List<String>> topicNameToSubscribers = new HashMap<>();
+    private HashMap<String, List<String>> offlineSubcribersToPendingContent = new HashMap<>();
+
     public ServerController(int port)
     {
         this.port = port;
@@ -52,11 +53,24 @@ public class ServerController implements Runnable{
 
     private void handleSubscriber(SubscriberPacket subscriberPacket) {
         if(subscriberPacket.getTopicName()==null){
+            //TODO: send pending messages to subscriber, before sending topiclist
             sendTopicListToClient(TypeOfPacket.Subscriber.toString());
         }
         else {
             System.out.println("Server: "+subscriberPacket.getTopicName());
+            bindSubscriberToTopic(subscriberPacket);
         }
+    }
+
+    private void bindSubscriberToTopic(SubscriberPacket subscriberPacket) {
+        String topicName = subscriberPacket.getTopicName();
+        //TODO: store in a hashmap <topicName, subscriberId>
+        List<String>  temp = new ArrayList<>();
+        if(topicNameToSubscribers.containsKey(topicName)) {
+            temp = topicNameToSubscribers.get(topicName);
+        }
+        temp.add(subscriberPacket.getGuid());
+        topicNameToSubscribers.put(topicName, temp);
     }
 
     private void sendTopicListToClient(String clientType) {
