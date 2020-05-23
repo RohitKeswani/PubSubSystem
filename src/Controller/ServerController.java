@@ -11,7 +11,7 @@ import java.util.*;
 public class ServerController implements Runnable{
     private int port;
     private List<String> topicList = new ArrayList<>();
-    private HashMap<String, List<String>> topicNameToSubscribers = new HashMap<>();
+    private HashMap<String, List<SubscriberPacket>> topicNameToSubscribers = new HashMap<>();
     private HashMap<String, List<String>> offlineSubcribersToPendingContent = new HashMap<>();
 
     public ServerController(int port)
@@ -65,11 +65,11 @@ public class ServerController implements Runnable{
     private void bindSubscriberToTopic(SubscriberPacket subscriberPacket) {
         String topicName = subscriberPacket.getTopicName();
         //TODO: store in a hashmap <topicName, subscriberId>
-        List<String>  temp = new ArrayList<>();
+        List<SubscriberPacket>  temp = new ArrayList<>();
         if(topicNameToSubscribers.containsKey(topicName)) {
             temp = topicNameToSubscribers.get(topicName);
         }
-        temp.add(subscriberPacket.getGuid());
+        temp.add(subscriberPacket);
         topicNameToSubscribers.put(topicName, temp);
     }
 
@@ -110,16 +110,36 @@ public class ServerController implements Runnable{
         }
         else {
             System.out.println(publisherPacket.getContent());
-            publishContentToSubcribers();
+            publishContentToSubcribers(publisherPacket);
         }
     }
 
-    private void publishContentToSubcribers() {
+    private void publishContentToSubcribers(PublisherPacket publisherPacket) {
         /**
          * TODO: send message ot all subscribers in list for value of topicName in hashmap of <topicName, subscriberList>
          * TODO: if any subscriber offline, store the packet in hashmap of subscriber <subscriberId, packet<List>>
          * TODO: try re-transmitting message with exponential timeoff method.
          */
+        String topicName = publisherPacket.getTopicName();
+        String content = publisherPacket.getContent();
+        List<SubscriberPacket> listOfSubcribedClients = topicNameToSubscribers.get(topicName);
+        for(SubscriberPacket subscriberPacket : listOfSubcribedClients){
+            ServerPacket serverPacket = (ServerPacket)
+                    new Common().createPacketForCommunication(TypeOfPacket.Server.toString());
+            serverPacket.setTopicName(topicName);
+            serverPacket.setContent(content);
+            try{
+                String address = "localhost";
+                int port = subscriberPacket.getSubscriberPort();
+                Socket socket = new Socket(address, port);
+                System.out.println("Server: Connected to "+subscriberPacket.getType().toString()+" to send content");
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                objectOutputStream.writeObject(serverPacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     private void handleAdvertiser(AdvertiserPacket advertiserPacket) {

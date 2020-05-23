@@ -1,7 +1,10 @@
 package Controller;
 
+import models.Packets.Packet;
+import models.Packets.PublisherPacket;
 import models.Packets.ServerPacket;
 import models.Packets.SubscriberPacket;
+import models.TypeOfPacket;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -31,17 +34,27 @@ public class SubscriberController implements Controller, Runnable {
             Properties properties = new Common().lookUpProperty();
             int subscriberPort = Integer.parseInt(properties.getProperty("subscriberPort"));
             ServerSocket serverSocket = new ServerSocket(subscriberPort);
-            System.out.println("Subscriber: Started");
-            System.out.println("Subscriber: Waiting for topics ...");
-            Socket clientSocket = serverSocket.accept();
-            System.out.println("Subscriber: Server Connected on " + clientSocket.getPort());
-            ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
-            ServerPacket serverPacket = (ServerPacket) objectInputStream.readObject();
-            System.out.println("Subscriber: Client Type " + serverPacket.getType());
-            printAvailableTopics(serverPacket.getTopicList());
+            while(true){
+                System.out.println("Subscriber: Started");
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Subscriber: Server Connected on " + clientSocket.getPort());
+                ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+                ServerPacket serverPacket = (ServerPacket) objectInputStream.readObject();
+                System.out.println("Subscriber: Client Type " + serverPacket.getType());
+                if(serverPacket.getTopicList()!=null)
+                    printAvailableTopics(serverPacket.getTopicList());
+                else{
+                    printContent(serverPacket.getTopicName(), serverPacket.getContent());
+                }
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private void printContent(String topicName, String content) {
+        System.out.println("Hi you have new content for your subcribed topic "+topicName);
+        System.out.println(content);
     }
 
     private static void printAvailableTopics(List<String> topicList) {
@@ -60,12 +73,14 @@ public class SubscriberController implements Controller, Runnable {
                 System.out.println("Subscriber: Receiving topics from Server now…");
                 thread.start();
             }
+            Properties properties = new Common().lookUpProperty();
+            int subscriberPort = Integer.parseInt(properties.getProperty("subscriberPort"));
+            subscriberPacket.setSubscriberPort(subscriberPort);
             Socket socket = new Socket(address, port);
             System.out.println("Subscriber: Connected");
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(subscriberPacket);
-            thread.join();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

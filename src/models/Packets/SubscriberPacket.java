@@ -8,6 +8,15 @@ public class SubscriberPacket implements Packet, Serializable {
     private String guid;
     private TypeOfPacket type;
     private String topicName;
+    private int subscriberPort;
+
+    public int getSubscriberPort() {
+        return subscriberPort;
+    }
+
+    public void setSubscriberPort(int subscriberPort) {
+        this.subscriberPort = subscriberPort;
+    }
 
     public String getGuid() {
         return guid;
